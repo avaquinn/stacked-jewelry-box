@@ -1,2 +1,3 @@
 # stacked-jewelry-box
-My stacked jewelry box
+I made a stacked jewerly box!
+
