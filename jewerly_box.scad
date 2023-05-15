@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 7;
+tray = 3;
 box_height = 1.70 * 25.4;
 
 
