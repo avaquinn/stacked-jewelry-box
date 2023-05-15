@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 4;
+tray = 7;
 box_height = 1.70 * 25.4;
 
 
@@ -183,15 +183,15 @@ module ring_lid(width, length, height, rounding_radius, wall_thickness)
 module lid(width, length, height, rounding_radius, wall_thickness)
 {
     echo("lid");
-        difference()
+    difference()
     {
         rounded_rectangle(width, length, wall_thickness*1.5, rounding_radius); 
     }
 }
 
 module basic_unrounded_tray(width, length, height, rounding_radius, wall_thickness)
-{
-    translate([0,0, wall_thickness]) rounded_rectangle((width -     wall_thickness * 2), (length - wall_thickness*2), (height - wall_thickness)*0.97, rounding_radius);
+{   
+    translate([0,0, wall_thickness]) rounded_rectangle(inner_box_width, inner_box_length, inner_box_height, rounding_radius);
 }
 
 module box(width, length, height, rounding_radius, wall_thickness)
