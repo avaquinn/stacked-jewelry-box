@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 3;
+tray = 1;
 box_height = 1.70 * 25.4;
 
 
@@ -271,6 +271,8 @@ module render_projection() {
 }
 
 if (show_box) render_box();
+    
+//projection(cut = true)rotate([0,90,0])render_box();
 //foo_cube();
 //translate([0,0,24])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
 
