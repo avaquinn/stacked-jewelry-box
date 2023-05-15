@@ -13,11 +13,9 @@ Use tray to specify the type of tray.
 
 //$fn = 60;
 
-// TO DO: FIX DOUBLE TRAY TRANSLATION
-
 show_box = true;
 show_projection = true;
-tray = 1;
+tray = 3;
 
 wall_thickness = 8;
 rounding_radius = 3.175;
@@ -103,9 +101,15 @@ module double_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Double tray");
     
-    translate([0, width / 4 + wall_thickness, wall_thickness]) rounded_tray((width - wall_thickness * 2), (length / 2 - wall_thickness*3/2), (height - wall_thickness)*0.97, tray_rounding);
+    tray_width = width - wall_thickness * 2;
+    tray_length = length / 2 - wall_thickness * 3/2;
+    tray_height = (height - wall_thickness) * 0.97;
+    
+    y_transformation = length / 4 - wall_thickness / 4 ;
+    
+    translate([0, y_transformation, wall_thickness]) rounded_tray(tray_width, tray_length, tray_height, tray_rounding);
             
-    translate([0, - (width / 4 + wall_thickness), wall_thickness]) rounded_tray((width - wall_thickness * 2), (length / 2 - wall_thickness*3/2), (height - wall_thickness)*0.97, tray_rounding);
+    translate([0, - y_transformation, wall_thickness]) rounded_tray(tray_width, tray_length, tray_height, tray_rounding);
 }
 
 module triple_tray(width, length, height, rounding_radius, wall_thickness)
@@ -116,6 +120,12 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
     translate([-(length / 4 - wall_thickness * 3/2), width / 6 + wall_thickness / 2, wall_thickness]) rounded_tray((width / 2 - wall_thickness * 3/2), (length * 2/3 - wall_thickness*3/2), (height - wall_thickness)*0.97, tray_rounding);
                    
     translate([0, - (width / 3 + 4/3 * wall_thickness), wall_thickness]) rounded_tray((width - wall_thickness * 2), (length * 1/3 - wall_thickness * 3/2), (height - wall_thickness)*0.97, tray_rounding);
+}
+
+module ring_tray(width, length, height, rounding_radius, wall_thickness)
+{
+    
+    
 }
 
 module lid(width, length, height, rounding_radius, wall_thickness)
@@ -202,3 +212,4 @@ module render_projection() {
 if (show_box) render_box();
 //if (show_projection) render_projection();
 //display_key_vectors();
+//translate([10,-23.5,25])cube(wall_thickness, center = true);
