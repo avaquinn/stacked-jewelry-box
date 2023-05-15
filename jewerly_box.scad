@@ -7,6 +7,7 @@ Use tray to specify the type of tray.
 2 - double tray
 3 - triple tray
 4 - ring tray
+5 - ring tray lid
 ?# - default unrounded tray prototype
 */
 
@@ -157,6 +158,22 @@ module ring_tray(width, length, height, rounding_radius, wall_thickness)
         
     }
 }
+module ring_lid(width, length, height, rounding_radius, wall_thickness)
+{
+    lid_width = (width - wall_thickness * 2) * 0.99;
+    lid_length = (length - wall_thickness * 2) * 0.99;
+    lid_height = wall_thickness / 2;
+    
+     x_transformation = width / 3;
+    
+    rounded_rectangle(lid_width, lid_length, lid_height, rounding_radius); 
+    
+    for(x = [0:1])
+    {
+        for (y = [0:1]) translate([x_transformation * x - width / 4.5, y * x_transformation, 4])cylinder(8, 3.5, 3);
+    }
+   
+}
 
 module lid(width, length, height, rounding_radius, wall_thickness)
 {
@@ -181,6 +198,10 @@ module box(width, length, height, rounding_radius, wall_thickness)
     else if (tray == 4)
     {
         ring_tray(width, length, height, rounding_radius, wall_thickness);
+    }
+    else if (tray == 5)
+    {
+        ring_lid(width, length, height, rounding_radius, wall_thickness);
     }
     else
     {
@@ -243,8 +264,12 @@ module render_box() {
 module render_projection() {
     projection(cut = true) render_box();
 }
-    
+difference()
+{
 if (show_box) render_box();
+foo_cube();
+#translate([0,0,24])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
+}
 //if (show_projection) render_projection();
 //display_key_vectors();
 //translate([10,-23.5,25])cube(wall_thickness, center = true);
