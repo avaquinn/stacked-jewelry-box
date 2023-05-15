@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 3;
+tray = 4;
 box_height = 1.70 * 25.4;
 
 
@@ -142,21 +142,16 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
 
 module ring_box(width, length, height, rounding_radius, wall_thickness)
 {
-    box_width = width - wall_thickness * 2;
     tray_length = length - wall_thickness * 2;
-    box_height = (height - wall_thickness) * 0.97;
-    y_transformation = (box_width - tray_length) / 2;
+    y_transformation = (inner_box_width - tray_length) / 2;
     
-    translate([0, y_transformation, wall_thickness]) rounded_tray(box_width, box_width, box_height, rounding_radius);
+    translate([0, y_transformation, wall_thickness]) rounded_tray(inner_box_width, inner_box_width, inner_box_height, rounding_radius);
 }
 
 module ring_tray(width, length, height, rounding_radius, wall_thickness)
 {
-    tray_width = width - wall_thickness * 2;
-    tray_length = length - wall_thickness * 2;
-    tray_height = (height - wall_thickness) * 0.97;
-    
-    y_transformation = (tray_width - tray_length) / 2;
+    tray_height = height * 2/3 - wall_thickness;
+    y_transformation = (inner_box_width - inner_box_length) / 2;
     
     difference()
     {
@@ -164,7 +159,7 @@ module ring_tray(width, length, height, rounding_radius, wall_thickness)
         
         ring_box(width, length, height, rounding_radius, wall_thickness);
         
-        translate([0,0, wall_thickness + height  * 1/3]) rounded_rectangle((width - wall_thickness * 2), (length - wall_thickness*2), (height * 2/3 - wall_thickness), tray_rounding);
+        translate([0,0, wall_thickness + height  * 1/3]) rounded_rectangle(inner_box_width, inner_box_length, tray_height, tray_rounding);
         
     }
 }
