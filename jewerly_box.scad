@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 2;
+tray = 3;
 box_height = 1.70 * 25.4;
 
 
@@ -112,7 +112,6 @@ module double_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Double tray");
     double_tray_length = length / 2 - wall_thickness * 3/2;
-    
     y_transformation = length / 4 - wall_thickness / 4 ;
     
     for(y = [-1 : 2 : 1])    
@@ -124,11 +123,21 @@ module double_tray(width, length, height, rounding_radius, wall_thickness)
 module triple_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Triple tray");
-    translate([length / 4 - wall_thickness * 3/2, width / 6 + wall_thickness / 2, wall_thickness]) rounded_tray((width / 2 - wall_thickness * 3/2), (length * 2/3 - wall_thickness*3/2), (height - wall_thickness)*0.97, tray_rounding);
-            
-    translate([-(length / 4 - wall_thickness * 3/2), width / 6 + wall_thickness / 2, wall_thickness]) rounded_tray((width / 2 - wall_thickness * 3/2), (length * 2/3 - wall_thickness*3/2), (height - wall_thickness)*0.97, tray_rounding);
-                   
-    translate([0, - (width / 3 + 4/3 * wall_thickness), wall_thickness]) rounded_tray((width - wall_thickness * 2), (length * 1/3 - wall_thickness * 3/2), (height - wall_thickness)*0.97, tray_rounding);
+    
+    PAR_tray_width = width / 2 - wall_thickness * 3/2;
+    PAR_tray_length = length * 2/3 - wall_thickness*3/2;
+    PAR_x_transformation = (length / 4 - wall_thickness * 3/2);
+    PAR_y_transformation = width / 6 + wall_thickness / 2;
+    
+    SNGL_tray_width = width - wall_thickness * 2;
+    SNGL_tray_length = length * 1/3 - wall_thickness * 3/2;
+    SNGL_y_transformation = - (width / 3 + 4/3 * wall_thickness);
+    
+    for(x = [-1 : 2 : 1])  
+    {
+        translate([x * PAR_x_transformation, PAR_y_transformation, wall_thickness]) rounded_tray(PAR_tray_width, PAR_tray_length, inner_box_height, tray_rounding);
+    }
+    translate([0, SNGL_y_transformation, wall_thickness]) rounded_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
 }
 
 module ring_box(width, length, height, rounding_radius, wall_thickness)
