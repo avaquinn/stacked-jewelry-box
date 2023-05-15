@@ -6,6 +6,7 @@ Use tray to specify the type of tray.
 1 - single tray
 2 - double tray
 3 - triple tray
+4 - ring tray
 ?# - default unrounded tray prototype
 */
 
@@ -15,15 +16,21 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 3;
+tray = 4;
+box_height = 1.70 * 25.4;
 
+
+//NOTE TO SELF! CHANGE NOTHING BELOW THIS LINE!!!!!
 wall_thickness = 8;
 rounding_radius = 3.175;
 tray_rounding = 5;
-
 box_width = 4 * 25.4;
 box_length = 5.5 * 25.4;
-box_height = 1 * 25.4;
+
+//box_height = 1 * 25.4;
+//NOTE TO SELF! CHANGE NOTHING ABOVE THIS LINE!!!!!!
+
+
 
 
 module build_four(x, y, z) {
@@ -122,10 +129,33 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
     translate([0, - (width / 3 + 4/3 * wall_thickness), wall_thickness]) rounded_tray((width - wall_thickness * 2), (length * 1/3 - wall_thickness * 3/2), (height - wall_thickness)*0.97, tray_rounding);
 }
 
+module ring_box(width, length, height, rounding_radius, wall_thickness)
+{
+    box_width = width - wall_thickness * 2;
+    tray_length = length - wall_thickness * 2;
+    box_height = (height - wall_thickness) * 0.97;
+    y_transformation = (box_width - tray_length) / 2;
+    
+    translate([0, y_transformation, wall_thickness]) rounded_tray(box_width, box_width, box_height, rounding_radius);
+}
+
 module ring_tray(width, length, height, rounding_radius, wall_thickness)
 {
+    tray_width = width - wall_thickness * 2;
+    tray_length = length - wall_thickness * 2;
+    tray_height = (height - wall_thickness) * 0.97;
     
+    y_transformation = (tray_width - tray_length) / 2;
     
+    difference()
+    {
+        rounded_rectangle(width, length, height, rounding_radius); 
+        
+        ring_box(width, length, height, rounding_radius, wall_thickness);
+        
+        translate([0,0, wall_thickness + height  * 1/3]) rounded_rectangle((width - wall_thickness * 2), (length - wall_thickness*2), (height * 2/3 - wall_thickness), tray_rounding);
+        
+    }
 }
 
 module lid(width, length, height, rounding_radius, wall_thickness)
@@ -144,16 +174,21 @@ module basic_unrounded_tray(width, length, height, rounding_radius, wall_thickne
 
 module box(width, length, height, rounding_radius, wall_thickness)
 {   
-    if(tray != 0)
+    if(tray == 0)
+    {
+        lid(width, length, height, rounding_radius, wall_thickness);
+    }
+    else if (tray == 4)
+    {
+        ring_tray(width, length, height, rounding_radius, wall_thickness);
+    }
+    else
     {
         difference()
         {
             rounded_rectangle(width, length, height, rounding_radius); 
             tray_type(width, length, height, rounding_radius, wall_thickness);
         } 
-    }
-    else {
-        lid(width, length, height, rounding_radius, wall_thickness);
     }
 }
 
