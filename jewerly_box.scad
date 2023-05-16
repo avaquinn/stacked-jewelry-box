@@ -36,10 +36,10 @@ inner_box_length = box_length - wall_thickness * 2;
 inner_box_height = (box_height - wall_thickness) * 0.97;
 
 
-scale([0.33, 0.33, 0.33])render_box();
-translate([35,0,0])scale([0.33, 0.33, 0.33])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
-translate([-25,0,0])scale([0.33, 0.33, 0.33])star();
-
+//scale([0.5, 0.5, 0.5])render_box();
+translate([10,0,0])scale([0.5, 0.5, 0.5])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
+//translate([-25,0,0])scale([0.47, 0.47, 0.47])star();
+print_tray_star();
 
 module build_four(x, y, z) {
     translate([0, 0, z]) {
@@ -177,8 +177,8 @@ module ring_tray(width, length, height, rounding_radius, wall_thickness)
 }
 module ring_lid(width, length, height, rounding_radius, wall_thickness)
 {
-    lid_width = (width - wall_thickness * 2) * 0.99;
-    lid_length = (length - wall_thickness * 2) * 0.99;
+    lid_width = (width - wall_thickness * 2) * 0.97;
+    lid_length = (length - wall_thickness * 2) * 0.97;
     lid_height = wall_thickness / 2;
     
      x_transformation = width / 2.75;
@@ -190,6 +190,11 @@ module ring_lid(width, length, height, rounding_radius, wall_thickness)
         for (y = [0:1]) translate([x_transformation * x - width / 5.5, y * x_transformation, 4])cylinder(8, 3.5, 3);
     }
    
+}
+
+module print_tray_star()
+{
+    scale([0.94, 0.94, 0.94])star();
 }
 
 module lid(width, length, height, rounding_radius, wall_thickness)
