@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 1;
+tray = 4;
 box_height = 1.70 * 25.4;
 
 
@@ -36,6 +36,10 @@ inner_box_length = box_length - wall_thickness * 2;
 inner_box_height = (box_height - wall_thickness) * 0.97;
 
 
+scale([0.33, 0.33, 0.33])render_box();
+translate([35,0,0])scale([0.33, 0.33, 0.33])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
+translate([-25,0,0])scale([0.33, 0.33, 0.33])star();
+
 
 module build_four(x, y, z) {
     translate([0, 0, z]) {
@@ -53,12 +57,18 @@ module build_four(x, y, z) {
         }      
     }
 }
-
 module foo_cube()
 {
     translate([0,-20,-55])cube([110,110,110]);
 }
-
+module star()
+{
+    linear_extrude(wall_thickness / 2)
+    {
+         scale([2.5, 2.5, 2.5])polygon(points = [[6*cos(18), 6*sin(18)], [2*cos(54), 2*sin(54)], [0, 6], [2*cos(126), 2*sin(126)], [6*cos(162), 6*sin(162)], [2*cos(198), 2*sin(198)], [6*cos(234), 6*sin(234)], [0, -2], [6*cos(306), 6*sin(306)], [2*cos(342), 2*sin(342)]]);
+    }
+   
+}
 module rounded_rectangle(width, length, height, rounding_radius)
 {
     x = width /2 - rounding_radius;
@@ -160,6 +170,8 @@ module ring_tray(width, length, height, rounding_radius, wall_thickness)
         ring_box(width, length, height, rounding_radius, wall_thickness);
         
         translate([0,0, wall_thickness + height  * 1/3]) rounded_rectangle(inner_box_width, inner_box_length, tray_height, tray_rounding);
+        
+        #translate([0,length * 1/3.5, wall_thickness / 2 + height  * 1/3])star();
         
     }
 }
@@ -270,7 +282,7 @@ module render_projection() {
     projection(cut = true) render_box();
 }
 
-if (show_box) render_box();
+//if (show_box) render_box();
     
 //projection(cut = true)rotate([0,90,0])render_box();
 //foo_cube();
