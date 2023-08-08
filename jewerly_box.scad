@@ -17,7 +17,7 @@ Use tray to specify the type of tray.
 
 show_box = true;
 show_projection = true;
-tray = 4;
+tray = 1;
 box_height = 1.70 * 25.4;
 
 
@@ -37,9 +37,8 @@ inner_box_height = (box_height - wall_thickness) * 0.97;
 
 
 //scale([0.5, 0.5, 0.5])render_box();
-translate([10,0,0])scale([0.5, 0.5, 0.5])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
+//translate([10,0,0])scale([0.5, 0.5, 0.5])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
 //translate([-25,0,0])scale([0.47, 0.47, 0.47])star();
-print_tray_star();
 
 module build_four(x, y, z) {
     translate([0, 0, z]) {
@@ -287,7 +286,7 @@ module render_projection() {
     projection(cut = true) render_box();
 }
 
-//if (show_box) render_box();
+if (show_box) render_box();
     
 //projection(cut = true)rotate([0,90,0])render_box();
 //foo_cube();
