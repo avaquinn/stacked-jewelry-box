@@ -25,8 +25,9 @@ vector_slice = 3;
 
 //$fn = 60;
 
-show_box = false;
-show_projection = true;
+show_box = true;
+show_projection = false;
+echo_cut_depths = true;
 
 wall_thickness = 8;
 rounding_radius = 3.175;
@@ -34,7 +35,7 @@ tray_rounding = 5;
 box_width = 4 * 25.4;
 box_length = 5.5 * 25.4;
 box_height = 1.70 * 25.4;
-is_rounded = true;
+is_rounded = false;
 
 
 inner_box_width = box_width - wall_thickness * 2;
@@ -111,9 +112,11 @@ module tray_type(width, length, height, rounding_radius, wall_thickness)
     else if(tray == 3) triple_tray(width, length, height, rounding_radius, wall_thickness);
                 
     else {
-         #scale([2,2.7,1])translate([0,0,height - wall_thickness])star();
+         scale([2,2.7,1])translate([0,0,height - wall_thickness])star();
         echo("please select tray type.....");
     }
+    if(is_rounded)echo("Rounded.");
+    else echo("Unrounded.");
 }
 
 module build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding)
@@ -278,8 +281,47 @@ module render_projection() {
     else display_key_vectors();
 }
 
+module print_depths_to_console()
+{
+    top_cut_depth =  wall_thickness / 2;
+    pocket_cut_depth = (box_height - wall_thickness) * 0.97 - tray_rounding;
+    bottom_cut_depth = (wall_thickness / 2) * 0.97;
+    
+    pocket_crude_cut_depth = (box_height - wall_thickness) * 0.97 - tray_rounding;
+    echo();
+    if(is_rounded)echo("Having a rounded tray is slightly more complicated, because it requires both an end mill and a ball mill");
+    echo("In millimeters....");
+    echo("You will want to cut the top slice depth to ");
+    echo(top_cut_depth);
+    echo();
+    
+    if(is_rounded){
+        echo("You will want an end mill to cut the pocket(s) to less than or equal to");
+        echo(pocket_crude_cut_depth);
+        echo();
+        echo("You will then want a ball mill to round the pocket(s) down to ");
+        echo(pocket_cut_depth);
+        echo("And finish with the end mill");
+        echo();
+        
+    }
+    else {
+         echo("You will want to cut the pocket(s) depth to ");
+         echo(pocket_cut_depth);
+    }
+    
+    echo();
+    echo("You will want to cut the bottom slice depth to ");
+    echo(bottom_cut_depth);
+    echo();
+    
+    //echo("You will want to cut the top slice to " +  top_cut_depth + "mm");
+    
+}
+
 if (show_box) render_box();
 if (show_projection)render_projection();
+    print_depths_to_console();
     
 
 /*difference(){
