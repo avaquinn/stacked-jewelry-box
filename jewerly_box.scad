@@ -6,8 +6,7 @@ Use tray to specify the type of tray.
 1 - single tray
 2 - double tray
 3 - triple tray
-4 - ring tray
-5 - ring tray lid
+4 - ring tray insert
 ?# - default unrounded tray prototype
 */
 
@@ -16,8 +15,8 @@ Use tray to specify the type of tray.
 //$fn = 60;
 
 show_box = true;
-show_projection = true;
-tray = 1;
+show_projection = false;
+tray = 4;
 box_height = 1.70 * 25.4;
 
 
@@ -111,6 +110,11 @@ module tray_type(width, length, height, rounding_radius, wall_thickness)
     else basic_unrounded_tray(width, length, height, rounding_radius, wall_thickness);
 }
 
+module build_tray(width, length, height, rounding_radius, wall_thickness)
+{
+    
+}
+
 module single_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Single tray");
@@ -149,31 +153,6 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
     translate([0, SNGL_y_transformation, wall_thickness]) rounded_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
 }
 
-module ring_box(width, length, height, rounding_radius, wall_thickness)
-{
-    tray_length = length - wall_thickness * 2;
-    y_transformation = (inner_box_width - tray_length) / 2;
-    
-    translate([0, y_transformation, wall_thickness]) rounded_tray(inner_box_width, inner_box_width, inner_box_height, rounding_radius);
-}
-
-module ring_tray(width, length, height, rounding_radius, wall_thickness)
-{
-    tray_height = height * 2/3 - wall_thickness;
-    y_transformation = (inner_box_width - inner_box_length) / 2;
-    
-    difference()
-    {
-        rounded_rectangle(width, length, height, rounding_radius); 
-        
-        ring_box(width, length, height, rounding_radius, wall_thickness);
-        
-        translate([0,0, wall_thickness + height  * 1/3]) rounded_rectangle(inner_box_width, inner_box_length, tray_height, tray_rounding);
-        
-        #translate([0,length * 1/3.5, wall_thickness / 2 + height  * 1/3])star();
-        
-    }
-}
 module ring_lid(width, length, height, rounding_radius, wall_thickness)
 {
     lid_width = (width - wall_thickness * 2) * 0.97;
@@ -217,10 +196,6 @@ module box(width, length, height, rounding_radius, wall_thickness)
         lid(width, length, height, rounding_radius, wall_thickness);
     }
     else if (tray == 4)
-    {
-        ring_tray(width, length, height, rounding_radius, wall_thickness);
-    }
-    else if (tray == 5)
     {
         ring_lid(width, length, height, rounding_radius, wall_thickness);
     }
@@ -288,9 +263,11 @@ module render_projection() {
 
 if (show_box) render_box();
     
+//translate([0,0,3])middle_vector();
+//square([box_width + 10, box_length + 10], center = true);
+    
 //projection(cut = true)rotate([0,90,0])render_box();
 //foo_cube();
-//translate([0,0,24])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
 
 //if (show_projection) render_projection();
 //display_key_vectors();
