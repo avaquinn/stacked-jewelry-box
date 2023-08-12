@@ -9,13 +9,14 @@ Use tray to specify the type of tray.
 4 - ring tray insert
 ?# - foo star tray, prompts user selection
 */
-tray = 2;
+tray = 3;
 
 /*
-Use this for exporting key vectors!
+Use vector_slice for exporting key vectors!
 0 - render for cut on tray bottom, to allow trays to stack
 1 - render for cutting tray pockets, the middle vector
 2 - render for cut on tray top, to allow trays to stack
+3 - interesting middle slice
 ?# - simple display of the 3 key vectors
 */
 vector_slice = 3;
@@ -27,29 +28,19 @@ vector_slice = 3;
 show_box = false;
 show_projection = true;
 
-
-is_rounded = true;
-box_height = 1.70 * 25.4;
-
-
-//NOTE TO SELF! CHANGE NOTHING BELOW THIS LINE!!!!!
 wall_thickness = 8;
 rounding_radius = 3.175;
 tray_rounding = 5;
 box_width = 4 * 25.4;
 box_length = 5.5 * 25.4;
-//box_height = 1 * 25.4;
-//NOTE TO SELF! CHANGE NOTHING ABOVE THIS LINE!!!!!!
+box_height = 1.70 * 25.4;
+is_rounded = true;
 
 
 inner_box_width = box_width - wall_thickness * 2;
 inner_box_length = box_length - wall_thickness * 2;
 inner_box_height = (box_height - wall_thickness) * 0.97;
 
-
-//scale([0.5, 0.5, 0.5])render_box();
-//translate([10,0,0])scale([0.5, 0.5, 0.5])ring_lid(box_width, box_length, box_height, rounding_radius, wall_thickness);
-//translate([-25,0,0])scale([0.47, 0.47, 0.47])star();
 
 module build_four(x, y, z) {
     translate([0, 0, z]) {
@@ -263,6 +254,11 @@ module top_vector() {
     projection(cut = true) translate([0,0,-(box_height - wall_thickness / 4)]) render_box();
 }
 
+module middle_slice() {
+    projection(cut = true)rotate([0,90,0])
+    translate([-wall_thickness,0,0])render_box();
+}
+
 module display_key_vectors()
 {
     bottom_vector();
@@ -278,6 +274,7 @@ module render_projection() {
     if(vector_slice == 0)bottom_vector();
     else if(vector_slice == 1)middle_vector();
     else if(vector_slice == 2)top_vector();
+    else if(vector_slice == 3)middle_slice();
     else display_key_vectors();
 }
 
@@ -289,13 +286,3 @@ if (show_projection)render_projection();
     render_box();
     translate([-20,-20,0])foo_cube();
 }*/
-
-//translate([0,0,3])middle_vector();
-//square([box_width + 10, box_length + 10], center = true);
-    
-//projection(cut = true)rotate([0,90,0])render_box();
-//foo_cube();
-
-//if (show_projection) render_projection();
-//display_key_vectors();
-//translate([10,-23.5,25])cube(wall_thickness, center = true);
