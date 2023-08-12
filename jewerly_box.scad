@@ -7,16 +7,27 @@ Use tray to specify the type of tray.
 2 - double tray
 3 - triple tray
 4 - ring tray insert
-?# - default unrounded tray prototype
+?# - foo star tray, prompts user selection
 */
+tray = 2;
+
+/*
+Use this for exporting key vectors!
+0 - render for cut on tray bottom, to allow trays to stack
+1 - render for cutting tray pockets, the middle vector
+2 - render for cut on tray top, to allow trays to stack
+?# - simple display of the 3 key vectors
+*/
+vector_slice = 3;
 
 //Handy conversion: 1in = 25.4mm
 
 //$fn = 60;
 
-show_box = true;
-show_projection = false;
-tray = 8;
+show_box = false;
+show_projection = true;
+
+
 is_rounded = true;
 box_height = 1.70 * 25.4;
 
@@ -264,10 +275,14 @@ module render_box() {
 }
 
 module render_projection() {
-    projection(cut = true) render_box();
+    if(vector_slice == 0)bottom_vector();
+    else if(vector_slice == 1)middle_vector();
+    else if(vector_slice == 2)top_vector();
+    else display_key_vectors();
 }
 
 if (show_box) render_box();
+if (show_projection)render_projection();
     
 
 /*difference(){
