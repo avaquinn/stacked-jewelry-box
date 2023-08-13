@@ -1,29 +1,34 @@
 //hello！
 //$fn = 60;
 
-/*
-"single_tray" = single pocket tray
-"double_tray" = double pocket tray
-"triple_tray" = triple pocket tray
-foo = funny star, prompts user input
-*/
-tray = "double_tray";
 
 /*
-Use vector_slice for exporting key vectors!
-0 - render for cut on tray bottom, to allow trays to stack
-1 - render for cutting tray pockets, the middle vector
-2 - render for cut on tray top, to allow trays to stack
-3 - interesting middle slice
-?# - simple display of the 3 key vectors
+Talk to father about: 
+- new Z transformation
+- 4th vector troubles
+- new varible names
 
-Use echo_cut_depths to print the required depths to cut when CNC machining to the console! :D
-*/
-vector_slice = 7;
+
+
+*/ 
+
+
+
+single_tray = "single_tray";
+double_tray = "double_tray";
+triple_tray = "triple_tray";
+tray = double_tray;
+
+bottom_vector = "bottom_vector";
+pocket_vector = "pocket_vector";
+top_vector = "top_vector";
+middle_slice = "middle_slice";
+all_vectors = "all_vectors";
+show_vector = all_vectors;
 
 show_box = false;
-show_projection = false;
-echo_cut_depths = true;
+show_projection = true;
+echo_cut_depths = false;
 
 //Handy conversion: 1in = 25.4mm
 
@@ -130,7 +135,6 @@ module single_tray(width, length, height, rounding_radius, wall_thickness)
     echo("Single tray");
     translate([0,0, inner_box_z_transformation]) #build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding);
 }
-translate([0,0,wall_thickness])cube(10);
 
 module double_tray(width, length, height, rounding_radius, wall_thickness)
 {
@@ -277,10 +281,10 @@ module render_box() {
 }
 
 module render_projection() {
-    if(vector_slice == 0)bottom_vector();
-    else if(vector_slice == 1)pocket_vector();
-    else if(vector_slice == 2)top_vector();
-    else if(vector_slice == 3)middle_slice();
+    if(show_vector == "bottom_vector")bottom_vector();
+    else if(show_vector == "pocket_vector")pocket_vector();
+    else if(show_vector == "top_vector")top_vector();
+    else if(show_vector == "middle_slice")middle_slice();
     else display_key_vectors();
 }
 
@@ -308,15 +312,3 @@ module print_depths_to_console()
 if (show_box)render_box();
 if (show_projection)render_projection();
 if (echo_cut_depths)print_depths_to_console();
-    
-module shit()
-{
-    //translate([0,0,10])pocket_vector();
-    //translate([0,0,10])inner_pocket_vector();
-    render_box();
-}
-
-difference(){
-    shit();
-    translate([10,0,0])foo_cube();
-}
