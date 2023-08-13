@@ -1,15 +1,13 @@
 //hello！
+//$fn = 60;
 
 /*
-Use tray to specify the type of tray. 
-0 - lid
-1 - single tray
-2 - double tray
-3 - triple tray
-4 - ring tray insert
-?# - foo star tray, prompts user selection
+"single_tray" = single pocket tray
+"double_tray" = double pocket tray
+"triple_tray" = triple pocket tray
+foo = funny star, prompts user input
 */
-tray = 3;
+tray = "double_tray";
 
 /*
 Use vector_slice for exporting key vectors!
@@ -18,16 +16,16 @@ Use vector_slice for exporting key vectors!
 2 - render for cut on tray top, to allow trays to stack
 3 - interesting middle slice
 ?# - simple display of the 3 key vectors
+
+Use echo_cut_depths to print the required depths to cut when CNC machining to the console! :D
 */
-vector_slice = 3;
+vector_slice = 7;
 
-//Handy conversion: 1in = 25.4mm
-
-//$fn = 60;
-
-show_box = true;
+show_box = false;
 show_projection = false;
 echo_cut_depths = true;
+
+//Handy conversion: 1in = 25.4mm
 
 wall_thickness = 8;
 rounding_radius = 3.175;
@@ -35,12 +33,13 @@ tray_rounding = 5;
 box_width = 4 * 25.4;
 box_length = 5.5 * 25.4;
 box_height = 1.70 * 25.4;
-is_rounded = false;
+is_rounded = true;
 
 
 inner_box_width = box_width - wall_thickness * 2;
 inner_box_length = box_length - wall_thickness * 2;
 inner_box_height = (box_height - wall_thickness) * 0.97;
+inner_box_z_transformation = box_height - ((box_height - wall_thickness) * 0.97);
 
 
 module build_four(x, y, z) {
@@ -105,11 +104,11 @@ module rounded_tray(width, length, height, tray_rounding)
 
 module tray_type(width, length, height, rounding_radius, wall_thickness)
 {
-     if(tray == 1) single_tray(width, length, height, rounding_radius, wall_thickness);
-                
-    else if(tray == 2) double_tray(width, length, height, rounding_radius, wall_thickness);
-                
-    else if(tray == 3) triple_tray(width, length, height, rounding_radius, wall_thickness);
+     if(tray == "single_tray") single_tray(width, length, height, rounding_radius, wall_thickness);
+           
+    else if(tray == "double_tray") double_tray(width, length, height, rounding_radius, wall_thickness);
+             
+    else if(tray == "triple_tray") triple_tray(width, length, height, rounding_radius, wall_thickness);
                 
     else {
          scale([2,2.7,1])translate([0,0,height - wall_thickness])star();
@@ -129,8 +128,9 @@ module build_tray(inner_box_width, inner_box_length, inner_box_height, tray_roun
 module single_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Single tray");
-    translate([0,0, wall_thickness]) build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding);
+    translate([0,0, inner_box_z_transformation]) #build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding);
 }
+translate([0,0,wall_thickness])cube(10);
 
 module double_tray(width, length, height, rounding_radius, wall_thickness)
 {
@@ -140,7 +140,7 @@ module double_tray(width, length, height, rounding_radius, wall_thickness)
     
     for(y = [-1 : 2 : 1])    
     {
-        translate([0, y *  y_transformation, wall_thickness]) build_tray(inner_box_width, double_tray_length, inner_box_height, tray_rounding);
+        translate([0, y *  y_transformation, inner_box_z_transformation]) build_tray(inner_box_width, double_tray_length, inner_box_height, tray_rounding);
     }
 }
 
@@ -159,9 +159,9 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
     
     for(x = [-1 : 2 : 1])  
     {
-        translate([x * PAR_x_transformation, PAR_y_transformation, wall_thickness]) build_tray(PAR_tray_width, PAR_tray_length, inner_box_height, tray_rounding);
+        translate([x * PAR_x_transformation, PAR_y_transformation, inner_box_z_transformation]) build_tray(PAR_tray_width, PAR_tray_length, inner_box_height, tray_rounding);
     }
-    translate([0, SNGL_y_transformation, wall_thickness]) build_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
+    translate([0, SNGL_y_transformation, inner_box_z_transformation]) build_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
 }
 
 module ring_lid(width, length, height, rounding_radius, wall_thickness)
@@ -248,11 +248,14 @@ module bottom_vector() {
     projection(cut = true) render_box();
 }
 
-module middle_vector() {
+module pocket_vector() {
     projection(cut = true) translate([0,0,-box_height * 2/3]) render_box();
 }
 
-
+//THIS IS WEIRDDDD
+module inner_pocket_vector() {
+    projection(cut = true) translate([0,0, - wall_thickness - 0.1]) render_box();
+}
 module top_vector() {
     projection(cut = true) translate([0,0,-(box_height - wall_thickness / 4)]) render_box();
 }
@@ -265,7 +268,7 @@ module middle_slice() {
 module display_key_vectors()
 {
     bottom_vector();
-    translate([0,0,box_height * 2/3]) middle_vector();
+    translate([0,0,box_height * 2/3]) pocket_vector();
     translate([0,0,box_height - wall_thickness / 4])top_vector();
 }
 
@@ -275,7 +278,7 @@ module render_box() {
 
 module render_projection() {
     if(vector_slice == 0)bottom_vector();
-    else if(vector_slice == 1)middle_vector();
+    else if(vector_slice == 1)pocket_vector();
     else if(vector_slice == 2)top_vector();
     else if(vector_slice == 3)middle_slice();
     else display_key_vectors();
@@ -284,47 +287,36 @@ module render_projection() {
 module print_depths_to_console()
 {
     top_cut_depth =  wall_thickness / 2;
-    pocket_cut_depth = (box_height - wall_thickness) * 0.97 - tray_rounding;
+    pocket_cut_depth = (box_height - wall_thickness) * 0.97;
     bottom_cut_depth = (wall_thickness / 2) * 0.97;
-    
     pocket_crude_cut_depth = (box_height - wall_thickness) * 0.97 - tray_rounding;
+    
     echo();
     if(is_rounded)echo("Having a rounded tray is slightly more complicated, because it requires both an end mill and a ball mill");
-    echo("In millimeters....");
-    echo("You will want to cut the top slice depth to ");
-    echo(top_cut_depth);
-    echo();
-    
+    echo("Top slice depth: ", top_cut_depth, "mm");
     if(is_rounded){
-        echo("You will want an end mill to cut the pocket(s) to less than or equal to");
-        echo(pocket_crude_cut_depth);
-        echo();
-        echo("You will then want a ball mill to round the pocket(s) down to ");
-        echo(pocket_cut_depth);
+        echo("You will want an end mill to cut the pocket(s) to less than or equal to", pocket_crude_cut_depth, "mm");
+        echo("You will then want a ball mill to round the pocket(s) down to ", pocket_cut_depth, "mm");
         echo("And finish with the end mill");
-        echo();
-        
     }
     else {
-         echo("You will want to cut the pocket(s) depth to ");
-         echo(pocket_cut_depth);
+         echo("Pocket(s) depth ", pocket_cut_depth, "mm");
     }
-    
-    echo();
-    echo("You will want to cut the bottom slice depth to ");
-    echo(bottom_cut_depth);
-    echo();
-    
-    //echo("You will want to cut the top slice to " +  top_cut_depth + "mm");
-    
+    echo("Bottom slice depth ", bottom_cut_depth, "mm");
 }
 
-if (show_box) render_box();
+if (show_box)render_box();
 if (show_projection)render_projection();
-    print_depths_to_console();
+if (echo_cut_depths)print_depths_to_console();
     
-
-/*difference(){
+module shit()
+{
+    //translate([0,0,10])pocket_vector();
+    //translate([0,0,10])inner_pocket_vector();
     render_box();
-    translate([-20,-20,0])foo_cube();
-}*/
+}
+
+difference(){
+    shit();
+    translate([10,0,0])foo_cube();
+}
