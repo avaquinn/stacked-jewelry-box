@@ -26,8 +26,8 @@ middle_slice = "middle_slice";
 all_vectors = "all_vectors";
 show_vector = all_vectors;
 
-show_box = false;
-show_projection = true;
+//show_box = false;
+show_projection = false;
 echo_cut_depths = false;
 
 //Handy conversion: 1in = 25.4mm
@@ -44,8 +44,34 @@ is_rounded = true;
 inner_box_width = box_width - wall_thickness * 2;
 inner_box_length = box_length - wall_thickness * 2;
 inner_box_height = (box_height - wall_thickness) * 0.97;
-inner_box_z_transformation = box_height - ((box_height - wall_thickness) * 0.97);
 
+show_box = true;
+//ring_slots_test();
+
+module ring_slots_test()
+{
+    base_height = 12;
+    difference()
+    {
+        rounded_rectangle(inner_box_width * 0.98, inner_box_length / 2 * 0.98, base_height, rounding_radius);
+        
+        for(x = [0 : 1 : 3])
+        {
+            x_move = 10;
+            y_move = inner_box_length / 8;
+            
+            translate([x_move * x, y_move, base_height])rotate([0,90,0])cylinder(h = x + 3, d = 22);
+        }
+    }
+    x_step = inner_box_width * 1/3.5;
+    y_move = -inner_box_length / 8;
+    
+    translate([x_step, y_move,base_height])cylinder(h = 6, d = 15);
+    translate([0, y_move,base_height])cylinder(h = 6, d = 16);
+    translate([-x_step , y_move,base_height])cylinder(h = 6, d = 17);
+    translate([-x_step , -y_move,base_height])cylinder(h = 6, d = 18);
+    
+}
 
 module build_four(x, y, z) {
     translate([0, 0, z]) {
@@ -133,7 +159,7 @@ module build_tray(inner_box_width, inner_box_length, inner_box_height, tray_roun
 module single_tray(width, length, height, rounding_radius, wall_thickness)
 {
     echo("Single tray");
-    translate([0,0, inner_box_z_transformation]) #build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding);
+    translate([0,0, wall_thickness]) #build_tray(inner_box_width, inner_box_length, inner_box_height, tray_rounding);
 }
 
 module double_tray(width, length, height, rounding_radius, wall_thickness)
@@ -144,7 +170,7 @@ module double_tray(width, length, height, rounding_radius, wall_thickness)
     
     for(y = [-1 : 2 : 1])    
     {
-        translate([0, y *  y_transformation, inner_box_z_transformation]) build_tray(inner_box_width, double_tray_length, inner_box_height, tray_rounding);
+        translate([0, y *  y_transformation, wall_thickness]) build_tray(inner_box_width, double_tray_length, inner_box_height, tray_rounding);
     }
 }
 
@@ -163,9 +189,9 @@ module triple_tray(width, length, height, rounding_radius, wall_thickness)
     
     for(x = [-1 : 2 : 1])  
     {
-        translate([x * PAR_x_transformation, PAR_y_transformation, inner_box_z_transformation]) build_tray(PAR_tray_width, PAR_tray_length, inner_box_height, tray_rounding);
+        translate([x * PAR_x_transformation, PAR_y_transformation, wall_thickness]) build_tray(PAR_tray_width, PAR_tray_length, inner_box_height, tray_rounding);
     }
-    translate([0, SNGL_y_transformation, inner_box_z_transformation]) build_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
+    translate([0, SNGL_y_transformation, wall_thickness]) build_tray(SNGL_tray_width, SNGL_tray_length, inner_box_height, tray_rounding);
 }
 
 module ring_lid(width, length, height, rounding_radius, wall_thickness)
@@ -291,7 +317,7 @@ module render_projection() {
 module print_depths_to_console()
 {
     top_cut_depth =  wall_thickness / 2;
-    pocket_cut_depth = (box_height - wall_thickness) * 0.97;
+    pocket_cut_depth = box_height - wall_thickness;
     bottom_cut_depth = (wall_thickness / 2) * 0.97;
     pocket_crude_cut_depth = (box_height - wall_thickness) * 0.97 - tray_rounding;
     
@@ -309,6 +335,11 @@ module print_depths_to_console()
     echo("Bottom slice depth ", bottom_cut_depth, "mm");
 }
 
-if (show_box)render_box();
+
 if (show_projection)render_projection();
 if (echo_cut_depths)print_depths_to_console();
+    
+difference(){
+    if (show_box)render_box();
+    foo_cube();
+}
