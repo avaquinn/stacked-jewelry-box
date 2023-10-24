@@ -1,17 +1,12 @@
 //hello！
 //$fn = 60;
 
-//soap;
-
-
-//HI I'M EDITING THISSSS
 
 /*
-Talk to father about: 
+Stuff to do
 - new Z transformation
 - 4th vector troubles
 - new varible names
-
 
 
 */ 
